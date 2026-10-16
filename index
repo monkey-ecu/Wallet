@@ -1,0 +1,1087 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#fff">
+  <link rel="icon" href="wallet-assets/apple-touch-icon-v5.png" type="image/png" sizes="180x180">
+  <link rel="apple-touch-icon" href="wallet-assets/apple-touch-icon-v5.png" sizes="180x180">
+  <meta name="apple-mobile-web-app-title" content="Wallet">
+  <title>Wallet | Prototipo visual</title>
+  <style>
+    :root{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI",sans-serif;color:#111217;background:#fff;font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;--blue:#382df5;--muted:#81838c;--soft:#f0f0f2;--green:#15966b}
+    *{box-sizing:border-box}html,body{width:100%;min-height:100%;margin:0;overscroll-behavior:none}body{display:flex;justify-content:center;background:#fff;touch-action:pan-y}button{color:inherit;font:inherit;-webkit-tap-highlight-color:transparent}button:focus-visible{outline:3px solid #8c86ff;outline-offset:2px}
+    .app{position:relative;width:100%;max-width:430px;height:100dvh;min-height:100dvh;overflow:hidden;background:#fff}.page{display:none;width:100%;height:100%;min-height:100%;padding-bottom:26px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}.page::-webkit-scrollbar{display:none}.page.active{display:flex;flex-direction:column}
+    .home-header{position:sticky;top:0;z-index:7;display:flex;align-items:center;justify-content:space-between;padding:13px 16px 17px}.home-header::before{content:"";position:absolute;inset:0 0 -14px;z-index:-1;pointer-events:none;background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);-webkit-mask-image:linear-gradient(#000 62%,transparent);mask-image:linear-gradient(#000 62%,transparent)}#chip-balance,.home-header.scrolled #active-wallet-name{display:none}.home-header.scrolled #chip-balance{display:inline;font-variant-numeric:tabular-nums}.wallet-chip,.round-button,.icon-button{border:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;background:#f5f5f6}
+    .wallet-chip{min-height:48px;gap:10px;padding:6px 17px 6px 7px;border-radius:28px;font-weight:650;font-size:14px}.wallet-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#36c878;color:#fff}.wallet-mark.blue{background:#4032f5}.wallet-mark svg{width:23px;height:23px}.header-actions{display:flex;gap:9px}.round-button{width:44px;height:44px;border-radius:50%}.round-button svg{width:23px;height:23px}
+    #home>.home-header~:not(.dock):not(.refresh-indicator){transform:translateY(var(--pull-page-distance,0px));transition:transform .2s ease-out}
+    #home.pulling>.home-header~:not(.dock):not(.refresh-indicator){transition:none}
+    .refresh-indicator{position:absolute;z-index:6;top:122px;left:50%;width:30px;height:30px;transform:translate(-50%,calc(var(--pull-distance,0px) - 48px));opacity:0;pointer-events:none;transition:transform .18s ease,opacity .18s ease}
+    .refresh-indicator.visible{opacity:1}
+    .refresh-spinner{position:relative;width:100%;height:100%}
+    .refresh-spinner i{position:absolute;top:1px;left:calc(50% - 2px);width:4px;height:8px;border-radius:4px;background:#92939b;transform-origin:2px 14px}
+    .refresh-spinner i:nth-child(1){transform:rotate(0deg);opacity:.18}
+    .refresh-spinner i:nth-child(2){transform:rotate(45deg);opacity:.28}
+    .refresh-spinner i:nth-child(3){transform:rotate(90deg);opacity:.38}
+    .refresh-spinner i:nth-child(4){transform:rotate(135deg);opacity:.5}
+    .refresh-spinner i:nth-child(5){transform:rotate(180deg);opacity:.62}
+    .refresh-spinner i:nth-child(6){transform:rotate(225deg);opacity:.74}
+    .refresh-spinner i:nth-child(7){transform:rotate(270deg);opacity:.86}
+    .refresh-spinner i:nth-child(8){transform:rotate(315deg);opacity:1}
+    .refresh-indicator.refreshing .refresh-spinner{animation:refresh-spin .8s linear infinite}
+    @keyframes refresh-spin{to{transform:rotate(360deg)}}
+    .promo{min-height:60px;margin:0 16px 25px;border:1px solid #dedee2;border-radius:17px;display:flex;align-items:center;gap:10px;padding:8px 11px}.promo-mark{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:12px;background:#f6ede4;color:#a9570a}.promo-mark svg{width:23px;height:23px}.promo-copy{flex:1;min-width:0}.promo-title{font-size:13px;font-weight:650;line-height:1.3}.promo-sub{margin-top:2px;color:#898991;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dismiss{width:27px;height:30px;border:0;padding:0;background:transparent;color:#b5b5bb;cursor:pointer}.dismiss svg{width:18px;height:18px}
+    .balance{padding:0 17px;margin:0 0 31px}.balance-value{font-size:39px;font-weight:740;letter-spacing:-1.6px;line-height:1.15;font-variant-numeric:tabular-nums}.balance-visual{display:inline-block}.balance-digit{display:inline-block;height:1.15em;overflow:hidden;line-height:1.15em;vertical-align:bottom}.balance-digit-track{display:flex;flex-direction:column;will-change:transform}.balance-digit-track span{display:block;height:1.15em;line-height:1.15em}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.balance-change{display:flex;align-items:center;gap:5px;margin-top:6px;color:var(--green);font-size:15px;font-weight:650}.balance-change svg{width:14px;height:14px}.balance-change.down{color:#e5484d}.balance-change.down svg{transform:rotate(180deg)}.token-gain.down{color:#e5484d}
+    .actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:0 16px;margin-bottom:34px}.action{min-width:0;border:0;padding:0;background:transparent;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer}.action-icon{width:100%;height:56px;border-radius:18px;display:grid;place-items:center;background:#f0f0f2}.action-icon svg{width:26px;height:26px}.action.swap .action-icon{background:var(--blue);color:#fff}.action-label{font-size:13px;font-weight:550;white-space:nowrap}
+    .section-heading{display:flex;align-items:center;gap:6px;padding:0 17px;margin-bottom:13px;font-size:15px;font-weight:650}.section-heading svg{width:17px;height:17px}.token-list{margin-bottom:8px}.token-row{min-height:68px;width:100%;padding:9px 17px;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:space-between;text-align:left}.token-left{display:flex;align-items:center;gap:12px;min-width:0;flex:1}.token-left>span:last-child{display:flex;flex-direction:column;min-width:0}.token-logo{position:relative;display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;border-radius:50%;color:#fff;overflow:visible}.token-logo svg,.token-logo .crypto-logo{width:100%;height:100%;border-radius:50%;object-fit:contain}.network-badge{position:absolute;right:-1px;bottom:-1px;width:15px;height:15px;border:2px solid #fff;border-radius:5px;display:grid;place-items:center;background:#101114;color:#f6c443;font-size:8px;font-weight:800}.token-name{display:block;font-size:15px;font-weight:650;white-space:nowrap}.token-quantity{display:block;margin-top:3px;color:#777982;font-size:12px;white-space:nowrap}.token-right{display:flex;flex-direction:column;align-items:flex-end;flex:0 0 auto;text-align:right}.token-value{font-size:15px;font-weight:650;white-space:nowrap}.token-gain{display:block;margin-top:3px;color:var(--green);font-size:12px;white-space:nowrap}.token-muted{display:block;margin-top:3px;color:var(--green);font-size:12px;white-space:nowrap}
+    .pill{min-height:42px;margin:5px 16px 30px;padding:0 17px;border:0;border-radius:24px;background:#f0f0f2;display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:650;cursor:pointer;align-self:flex-start}.pill svg{width:17px;height:17px}
+    .perp-scroll{display:flex;gap:12px;padding:0 16px 30px;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;scrollbar-width:none}.perp-scroll::-webkit-scrollbar{display:none}.perp-card{flex:0 0 156px;height:137px;padding:17px;border-radius:22px;background:#f0f0f2;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between}.perp-logo{position:relative;width:41px;height:41px}.perp-logo svg,.perp-logo>img:first-child{width:100%;height:100%;object-fit:contain;border-radius:50%}.perp-badge{position:absolute;right:-5px;bottom:-5px;width:19px;height:19px;border:2px solid #fff;border-radius:7px;background:#072723;overflow:hidden}.perp-badge img{display:block;width:100%;height:100%;padding:3.5px;object-fit:contain;mix-blend-mode:lighten}.perp-pair{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:650}.lev-tag{padding:3px 8px;border-radius:14px;background:#e4e4e8;color:#7b7c84;font-size:11px;font-weight:500}.perp-vol{color:#85868e;font-size:12px;white-space:nowrap}
+    .dock{position:absolute;bottom:max(14px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(calc(100% - 32px),398px);display:flex;gap:10px;z-index:5}.dock-pills,.search-button{height:60px;border:1px solid #eeeef0;background:rgba(255,255,255,.96);box-shadow:0 7px 24px rgba(0,0,0,.07)}.dock-pills{flex:1;padding:4px;border-radius:36px;display:grid;grid-template-columns:repeat(3,1fr);align-items:center}.dock-button,.search-button{display:grid;place-items:center;border:0;cursor:pointer}.dock-button{height:50px;border-radius:28px;background:transparent}.dock-button.active{background:#f0f0f2}.dock-button svg{width:23px;height:23px}.search-button{flex:0 0 60px;border-radius:50%}.search-button svg{width:24px;height:24px}
+    .sub-header{position:relative;min-height:49px;padding:0 16px;display:flex;align-items:center;justify-content:center}.sub-header h1{margin:0;font-size:15px;font-weight:650}.back-button{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:38px;height:38px;border:0;border-radius:50%;background:#f6f6f7;display:grid;place-items:center;cursor:pointer}.back-button svg{width:19px;height:19px}.screen-content{flex:1;padding:10px 16px 24px}
+    .wallets-page{position:absolute;inset:0;z-index:8;height:100%;min-height:100%;padding:16px 16px 94px;background:#fff}
+    .wallets-page.active{animation:wallets-rise .28s cubic-bezier(.2,.75,.25,1) both}
+    @keyframes wallets-rise{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .wallets-header{height:54px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-bottom:24px}
+    .wallets-header h1{margin:0;font-size:16px;font-weight:650}
+    .wallets-header-actions{display:flex;justify-content:flex-end;gap:8px}
+    .wallets-close{justify-self:start;width:42px;height:42px;border:0;border-radius:50%;background:#f0f0f2;display:grid;place-items:center;cursor:pointer}
+    .wallets-close svg{width:23px;height:23px}
+    .wallets-header-actions .round-button{width:42px;height:42px}
+    .wallets-heading{margin:0 0 20px;font-size:16px;font-weight:650}
+    .wallet-list{display:flex;flex-direction:column;gap:22px}
+    .wallet-row{width:100%;min-height:67px;padding:0;border:0;background:transparent;display:grid;grid-template-columns:40px 54px minmax(0,1fr) 44px;align-items:center;gap:12px;text-align:left;cursor:pointer}
+    .wallet-radio{width:19px;height:19px;border:2px solid #92939b;border-radius:50%;display:grid;place-items:center}
+    .wallet-row[aria-checked="true"] .wallet-radio{border-color:#4534f5}
+    .wallet-row[aria-checked="true"] .wallet-radio:after{width:9px;height:9px;border-radius:50%;background:#4534f5;content:""}
+    .wallet-avatar{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:#fff;background:#38cb78}
+    .wallet-avatar svg{width:25px;height:25px}
+    .wallet-row[data-wallet="new"] .wallet-avatar{background:#4032f5}
+    .wallet-row-name{font-size:15px;font-weight:650}
+    .wallet-more{position:relative;width:42px;height:42px;padding:0;border:0;border-radius:50%;background:#f0f0f2;color:#858691;display:grid;place-items:center;cursor:pointer}
+    .wallet-more svg{width:18px;height:18px;display:block}
+    .add-wallet-wrap{position:absolute;right:0;bottom:0;left:0;padding:14px 16px max(16px,env(safe-area-inset-bottom));border-top:1px solid #e4e4e7;background:#fff}
+    .add-wallet-button{width:100%;min-height:55px;border:0;border-radius:32px;background:#f0f0f2;font-size:15px;font-weight:650;cursor:pointer}
+    .wallet-sheet-backdrop{position:absolute;inset:0;z-index:10;background:rgba(0,0,0,.2)}
+    .wallet-sheet-backdrop[hidden]{display:none}
+    .wallet-sheet{position:absolute;right:0;bottom:0;left:0;height:min(500px,48dvh);min-height:410px;padding:14px 24px max(18px,env(safe-area-inset-bottom));border-radius:30px 30px 0 0;background:#fff;display:flex;flex-direction:column;animation:sheet-rise .24s ease-out}
+    .wallet-sheet-header{position:relative;min-height:54px;display:flex;align-items:center;justify-content:center}
+    .wallet-sheet-header h2{margin:0;font-size:15px;font-weight:700}
+    .wallet-sheet-close{position:absolute;right:0;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;border-radius:50%;background:#f0f0f2;display:grid;place-items:center;cursor:pointer}
+    .wallet-sheet-close svg{width:22px;height:22px}
+    .wallet-sheet-art{width:174px;height:155px;align-self:center;margin:12px auto 20px}
+    .wallet-sheet-options{display:flex;flex-direction:column;gap:12px;margin-top:auto}
+    .wallet-option{width:100%;min-height:67px;padding:5px 4px;border:0;background:transparent;display:flex;align-items:center;gap:13px;text-align:left;cursor:pointer}
+    .wallet-option-icon{width:48px;height:48px;flex:0 0 48px;border-radius:50%;display:grid;place-items:center;background:#4132f5;color:#fff}
+    .wallet-option-icon.secondary{background:#f0efff;color:#4335ed}
+    .wallet-option-icon svg{width:25px;height:25px}
+    .wallet-option-copy{min-width:0;display:flex;flex-direction:column;gap:4px}
+    .wallet-option-title{font-size:15px;font-weight:650}
+    .wallet-option-subtitle{color:#858690;font-size:12px;line-height:1.35}
+    .recovery-screen{position:absolute;inset:0;z-index:12;display:none;flex-direction:column;padding:14px 16px;background:#fff}
+    .recovery-screen.active{display:flex}
+    .recovery-screen.slide-in{animation:recovery-slide-in .32s cubic-bezier(.22,.61,.36,1) both}
+    @keyframes recovery-slide-in{from{transform:translateX(100%)}to{transform:translateX(0)}}
+    .recovery-header{position:relative;min-height:46px;display:flex;align-items:center;justify-content:center}
+    .recovery-header h2{margin:0;font-size:13px;font-weight:650}
+    .recovery-back{position:absolute;left:0;top:50%;transform:translateY(-50%);width:42px;height:42px;border:0;border-radius:50%;background:#f0f0f2;display:grid;place-items:center;cursor:pointer}
+    .recovery-back svg{width:23px;height:23px;transform:translateX(-2.4px)}
+    .recovery-methods{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin-top:12px}
+    .recovery-method{min-height:60px;padding:4px 7px 4px 0;border:0;background:transparent;display:flex;align-items:center;gap:10px;font-size:14px;font-weight:550;cursor:pointer}
+    .recovery-icon{width:42px;height:42px;flex:0 0 42px;border-radius:50%;background:#f0efff;color:#4335ed;display:grid;place-items:center}
+    .recovery-icon svg{width:23px;height:23px}
+    .recovery-more{min-height:38px;margin-top:2px;padding:0 12px;border:0;border-radius:20px;background:#f0f0f2;display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:550;cursor:pointer}
+    .recovery-more svg{width:16px;height:16px;transition:transform .18s}
+    .recovery-more[aria-expanded="true"] svg{transform:rotate(180deg)}
+    .recovery-extra[hidden]{display:none}
+    .recovery-note{margin:14px 2px 0;color:#81838c;font-size:11px;line-height:1.45}
+    .restore-screen{position:absolute;inset:0;z-index:13;display:none;flex-direction:column;padding:14px 16px 20px;background:#fff}
+    .restore-screen.active{display:flex}
+    .restore-screen.slide-in{animation:recovery-slide-in .32s cubic-bezier(.22,.61,.36,1) both}
+    .restore-header{position:relative;min-height:46px;display:flex;align-items:center;justify-content:center}
+    .restore-back,.restore-scan{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border:0;border-radius:50%;background:#f0f0f2;display:grid;place-items:center}
+    .restore-back{left:0;cursor:pointer}.restore-scan{right:0;cursor:pointer}
+    .restore-back svg{width:23px;height:23px;transform:translateX(-2.4px)}
+    .restore-scan svg{width:23px;height:23px}
+    .restore-title{margin:22px 0 20px;font-size:23px;font-weight:700;letter-spacing:-.4px}
+    .phrase-demo-box{position:relative;height:220px;flex:0 0 220px;border:1px solid #dedee2;border-radius:15px;background:#fff}
+    .phrase-demo-box input{width:100%;height:100%;padding:18px 18px 62px;border:0;border-radius:15px;outline:0;background:transparent;text-align:center;color:#17181d;font:inherit;font-size:16px}
+    .phrase-demo-box input::placeholder{color:#7c7d86;opacity:1}
+    .paste-demo{position:absolute;right:12px;bottom:12px;width:76px;height:37px;padding:0;border:0;border-radius:22px;background:#382df5;color:#fff;font-size:13px;font-weight:600;cursor:pointer}
+    .phrase-demo-box.is-obscured input{filter:blur(5px)}
+    .registration-code-action{position:absolute;bottom:12px;width:76px;height:37px;padding:0;border:0;border-radius:22px;background:#f0f0f2;color:#777982;font-size:11px;font-weight:650;cursor:pointer}
+    .registration-code-action[data-action="toggle-registration-code-visibility"]{right:100px}
+    .registration-code-action[data-action="clear-registration-code"]{right:12px}
+    .registration-code-action[hidden]{display:none}
+    .restore-hint{position:absolute;top:calc(50% + 176.5px);left:16px;right:16px;margin:0;padding:0 12px;transform:translateY(-50%);text-align:center;color:#777982;font-size:13px;line-height:1.55}
+    .restore-hint svg{display:block;width:22px;height:22px;margin:0 auto 25px;color:#92939b}
+    .restore-continue{position:absolute;right:16px;bottom:max(20px,env(safe-area-inset-bottom));left:16px;min-height:52px;height:52px;border:0;border-radius:30px;background:#f0f0f2;color:#9c9da5;font-size:15px;font-weight:650;cursor:not-allowed;transition:bottom .18s ease-out}
+    .restore-screen.keyboard-open .restore-continue{bottom:calc(var(--keyboard-inset, 0px) + 12px)}
+    .restore-continue:enabled{background:#382df5;color:#fff;cursor:pointer}
+    .restore-hint svg{margin-bottom:14px}
+    .demo-wallet-row[hidden]{display:none}
+    @keyframes sheet-rise{from{transform:translateY(28px);opacity:.75}to{transform:translateY(0);opacity:1}}
+    @media(prefers-reduced-motion:reduce){.wallet-sheet{animation:none}}
+    .picker-search{width:100%;height:43px;margin:5px 0 12px;padding:0 13px;border:0;border-radius:23px;background:#f5f5f6;display:flex;align-items:center;gap:9px;color:#868790}.picker-search svg{width:18px;height:18px}.picker-search input{min-width:0;flex:1;border:0;outline:0;background:transparent;color:#17181d;font:inherit;font-size:16px}.picker-search input::placeholder{color:#898a92}
+    .picker-row{width:100%;min-height:59px;padding:7px 1px;border:0;background:transparent;display:flex;align-items:center;justify-content:space-between;text-align:left;cursor:pointer}.demo-note{margin-top:20px;padding:12px 14px;border-radius:14px;background:#f7f3ec;color:#69563d;font-size:12px;line-height:1.45}.send-demo-title{margin:20px 0 7px;font-size:19px;font-weight:700}
+    .receive-content{padding:2px 16px 22px;display:flex;flex-direction:column;flex:1}.network-select{align-self:center;min-height:32px;margin:0 0 8px;padding:0 12px;border:0;border-radius:18px;background:#f5f5f6;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;cursor:pointer}.network-select svg{width:13px;height:13px}.qr-card{width:min(100%,264px);align-self:center;padding:13px 13px 10px;border-radius:18px;box-shadow:0 2px 8px rgba(0,0,0,.09)}.qr-art{display:block;width:100%;height:auto}.qr-address{margin-top:5px;text-align:center;font-size:9px;font-weight:550;overflow-wrap:anywhere}.warning{margin:16px 0 12px;padding:9px 11px;border-radius:12px;background:#f8efe5;color:#654b2e;font-size:10px;line-height:1.45}.receive-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.secondary-button{min-height:44px;border:0;border-radius:12px;background:#f0f0f2;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:600;cursor:pointer}.secondary-button svg{width:17px;height:17px}.receive-footer{margin-top:auto;padding-top:34px}.exchange-button{width:100%;min-height:48px;border:0;border-radius:26px;background:#f0f0f2;display:flex;justify-content:center;align-items:center;gap:8px;font-size:12px;font-weight:600;cursor:pointer}.mini-coin{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;color:white;font-size:10px;font-weight:700}.mini-coin img{width:100%;height:100%;border-radius:50%;object-fit:contain}.coin-btc{background:#f7931a}.coin-btc img{background:transparent}.coin-usdt{background:#26a17b}
+    .swap-content{padding:1px 15px 28px;display:flex;flex-direction:column;flex:1}.swap-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.market-select,.settings-button{min-height:34px;border:0;border-radius:20px;background:#f5f5f6;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 11px;font-size:11px;font-weight:550;cursor:pointer}.market-select svg,.settings-button svg{width:15px;height:15px}.swap-box{position:relative;min-height:55px;margin-bottom:5px;padding:7px 8px;border-radius:15px;background:#f0f0f2;display:flex;align-items:center;justify-content:space-between;gap:8px}.swap-input{min-width:0;width:42%;border:0;outline:0;background:transparent;font:inherit;font-size:18px}.swap-input::placeholder{color:#8c8d95}.asset-button{min-height:36px;padding:3px 8px;border:0;border-radius:20px;background:#fff;display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer}.asset-button svg{width:15px;height:15px}.holding{position:absolute;right:11px;bottom:-16px;color:#73757d;font-size:9px}.swap-arrow{position:relative;z-index:1;align-self:center;margin:-1px 0;width:25px;height:25px;border:2px solid #fff;border-radius:50%;background:#f0f0f2;display:grid;place-items:center;color:#74757c}.swap-arrow svg{width:15px;height:15px}.range-wrap{margin-top:auto;padding:0 4px 10px}.range-wrap input{width:100%;accent-color:#d7d7dc}
+    .keypad{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:45px;align-items:center;text-align:center;font-size:17px;font-weight:550}.keypad button{height:42px;border:0;background:transparent;cursor:pointer}.keypad svg{width:18px;height:18px}.slide-button{position:relative;min-height:46px;border:0;border-radius:26px;background:#f8f8f9;color:#c3c3ca;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:550;cursor:not-allowed}.slide-arrow{position:absolute;left:4px;width:38px;height:38px;border-radius:50%;background:#fff;display:grid;place-items:center;color:#d2d2d6}.slide-arrow svg{width:19px;height:19px}
+    .buy-content{padding:6px 15px 24px;display:flex;flex-direction:column;flex:1}.buy-tabs{width:190px;height:34px;align-self:center;padding:3px;border-radius:20px;background:#f0f0f2;display:flex}.buy-tab{flex:1;border:0;border-radius:18px;background:transparent;color:#82838b;font-size:11px;cursor:pointer}.buy-tab.active{background:#fff;color:#18191e;font-weight:600}.buy-amount-area{min-height:236px;display:flex;align-items:center;justify-content:center;gap:10px;padding-top:7px}.buy-amount{min-width:0;width:145px;border:0;outline:0;background:transparent;text-align:right;font:inherit;font-size:34px;font-weight:700;letter-spacing:-1px}.buy-choices{display:flex;flex-direction:column;gap:8px}.choice-button{min-height:32px;padding:0 8px;border:0;border-radius:18px;background:#f0f0f2;display:flex;align-items:center;gap:5px;font-size:11px;font-weight:550;cursor:pointer}.choice-button svg{width:13px;height:13px}.buy-estimate{margin-top:-43px;margin-bottom:22px;text-align:center;color:#898a91;font-size:11px}.payment-method{min-height:49px;margin-bottom:11px;padding:0 12px;border-radius:12px;background:#f0f0f2;display:flex;align-items:center;justify-content:space-between;font-size:11px}.payment-copy{display:flex;flex-direction:column;gap:2px}.payment-copy span:first-child{color:#85868d;font-size:9px}.apple-pay{font-size:12px;font-weight:600}.continue-button{min-height:42px;margin-top:10px;border:0;border-radius:24px;background:var(--blue);color:#fff;font-size:11px;font-weight:550;cursor:pointer}
+    #buy .sub-header{min-height:42px}#buy .buy-amount-area{min-height:75px;transform:translateY(-12px)}#buy .buy-estimate{margin-bottom:16px}#buy .payment-method{min-height:44px;margin-bottom:8px}#buy .keypad{grid-auto-rows:22px}#buy .keypad button{height:24px}
+    #home>*{flex-shrink:0}
+    .perp-logo.hype-logo{padding:9px;border-radius:50%;background:#0b2b27}.perp-logo.hype-logo>img:first-child{border-radius:0;mix-blend-mode:lighten}
+    .pred-scroll{display:flex;gap:12px;padding:0 16px 30px;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;scrollbar-width:none}.pred-scroll::-webkit-scrollbar{display:none}
+    .pred-card{flex:0 0 236px;min-height:134px;padding:16px;border:0;border-radius:22px;background:#f0f0f2;display:flex;flex-direction:column;gap:14px;text-align:left;cursor:pointer}
+    .pred-top{display:flex;align-items:flex-start;justify-content:space-between}.pred-thumb{position:relative;width:40px;height:40px;border-radius:10px}.pred-thumb.hormuz{background:linear-gradient(160deg,#2b4a63 0 38%,#b99a6a 38% 70%,#6e7f5b 70%)}.pred-thumb.flags{background:linear-gradient(180deg,#b22234 0 20%,#fff 20% 40%,#b22234 40% 60%,#fff 60% 80%,#2a8a3a 80%)}
+    .pred-badge{position:absolute;right:-3px;bottom:-3px;width:17px;height:17px;border:2px solid #f0f0f2;border-radius:6px;background:#8b5cf6;display:grid;place-items:center}.pred-badge svg{width:10px;height:10px}
+    .pred-date{display:inline-flex;align-items:center;gap:6px;color:#8b8c94;font-size:12px;font-weight:500}.pred-date i{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#111217}.pred-date svg{width:11px;height:11px}
+    .pred-title{font-size:13px;font-weight:650;line-height:1.4;color:#111217}
+    .ai-bar{display:flex;align-items:center;gap:10px;margin:0 16px 118px;padding:12px;border-radius:20px;background:#f0f0f2}.ai-bar>svg{width:24px;height:24px;flex:0 0 24px;margin-left:4px}.ai-title{flex:1;min-width:0;font-size:14px;font-weight:650;white-space:nowrap}.ai-ask{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:0;border-radius:24px;background:#e4e4e8;font-size:13px;font-weight:600;cursor:pointer}.ai-ask svg{width:16px;height:16px}
+    .tokens-page.slide-in{animation:recovery-slide-in .32s cubic-bezier(.22,.61,.36,1) both}.tokens-page.slide-out{position:absolute;inset:0;z-index:20;background:#fff;animation:tokens-slide-out .28s cubic-bezier(.22,.61,.36,1) both;pointer-events:none}@keyframes tokens-slide-out{from{transform:translateX(0)}to{transform:translateX(100%)}}
+    .tokens-page .sub-header{margin-top:16px;min-height:54px;margin-bottom:8px}.tokens-page .sub-header h1{font-size:16px}.tokens-page .back-button{width:42px;height:42px;background:#f0f0f2}.tokens-page .back-button svg{width:23px;height:23px}.tokens-page .tokens-filter{left:auto;right:16px}.tokens-content{padding-bottom:110px}.tokens-content .token-row{padding-left:1px;padding-right:1px}
+    .setup-page{padding:22px 18px 28px}.setup-step{margin:0 0 4px;color:var(--muted);font-size:13px;font-weight:600}.setup-title{margin:0 0 6px;font-size:26px;letter-spacing:-.6px}.setup-sub{margin:0 0 20px;color:#6f717a;font-size:13.5px;line-height:1.4}
+    .setup-field{display:block;margin-bottom:14px}.setup-field>span{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px;font-weight:650}.setup-field .coin-dot{width:22px;height:22px;border-radius:50%;object-fit:contain}.setup-field .coin-dot.usdt{display:grid;place-items:center;background:#26a17b;color:#fff;font-size:12px;font-weight:800}
+    .setup-field input{width:100%;height:50px;padding:0 15px;border:1.5px solid #e1e1e6;border-radius:15px;background:#f7f7f9;font:inherit;font-size:16px;color:#111217}.setup-field input:focus{outline:0;border-color:var(--blue);background:#fff}
+    .setup-more{display:block;width:100%;margin:0 0 14px;padding:12px;border:1.5px dashed #c9c9d1;border-radius:15px;background:transparent;color:var(--blue);font-size:14px;font-weight:650;cursor:pointer}
+    .setup-total{display:flex;justify-content:space-between;align-items:center;margin:6px 0 20px;padding:14px 16px;border-radius:16px;background:#f0f0f2;font-size:14px;font-weight:650}.setup-total strong{font-size:18px}
+    .setup-actions{display:flex;gap:10px;margin-top:auto;padding-top:10px}.setup-actions button{flex:1;height:52px;border:0;border-radius:26px;font-size:15px;font-weight:700;cursor:pointer}.setup-primary{background:var(--blue);color:#fff}.setup-secondary{background:#f0f0f2}
+    .toast{position:fixed;z-index:20;left:50%;bottom:90px;transform:translate(-50%,12px);opacity:0;pointer-events:none;max-width:calc(100% - 36px);padding:11px 15px;border-radius:22px;background:#24252a;color:#fff;font-size:12px;text-align:center;transition:opacity .18s,transform .18s}.toast.visible{opacity:1;transform:translate(-50%,0)}
+    @media(min-width:600px){body{background:#f5f5f7;padding:18px 0}.app{height:calc(100dvh - 36px);min-height:calc(100dvh - 36px);border-radius:28px;box-shadow:0 10px 50px rgba(0,0,0,.1)}.page{height:100%;min-height:100%}.dock{bottom:14px}}
+    @media(max-width:360px){.actions{gap:7px}.action-label{font-size:12px}.balance-value{font-size:36px}.perp-card{flex-basis:145px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+  </style>
+</head>
+<body>
+  <main class="app" aria-label="Prototipo visual de wallet">
+    <section class="page active" id="home" aria-label="Pantalla principal">
+      <div class="refresh-indicator" id="refresh-indicator" role="status" aria-label="Actualizando contenido" aria-hidden="true"><span class="refresh-spinner" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+      <header class="home-header">
+        <button class="wallet-chip" type="button" data-action="wallet"><span class="wallet-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 7.5h13.5A2.5 2.5 0 0 1 21 10v8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18V6a3 3 0 0 1 3-3h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M16 12.5h5v4h-5a2 2 0 0 1 0-4Z" stroke="currentColor" stroke-width="2"/></svg></span><span id="active-wallet-name">Jefazo777</span><span id="chip-balance" aria-hidden="true"></span></button>
+        <div class="header-actions"><button class="round-button" type="button" aria-label="Actividad" data-action="activity"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 1 0 2.4-5.7L4 8.5M4 4v4.5h4.5M12 7v5l3 2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="round-button" type="button" aria-label="Escanear" data-action="scan"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3M7 12h10" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+      </header>
+      <div class="promo" id="backup-banner"><span style="color:#85838d;font-size:20px;font-weight:700">!</span><span class="promo-mark"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><div class="promo-copy"><div class="promo-title">Haz una copia de seguridad de tu billetera</div><div class="promo-sub">Protege tus activos haciendo una copia de seguridad</div></div><button class="dismiss" type="button" aria-label="Cerrar aviso" data-action="dismiss"><svg viewBox="0 0 24 24" fill="none"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
+      <div class="balance"><div class="balance-value" id="wallet-balance" data-value="$363.99" aria-live="polite" aria-atomic="true"><span class="balance-visual" aria-hidden="true">$363.99</span><span class="sr-only">$363.99</span></div><div class="balance-change"><svg viewBox="0 0 16 16"><path d="M8 2 1.8 12.2a1 1 0 0 0 .9 1.5h10.6a1 1 0 0 0 .9-1.5L8 2Z" fill="currentColor"/></svg><span id="wallet-change">+$0.03 (0.01%)</span></div></div>
+      <nav class="actions" aria-label="Acciones de wallet">
+        <button class="action" type="button" data-action="send"><span class="action-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M6 18 18 6M7 6h11v11" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="action-label">Enviar</span></button>
+        <button class="action" type="button" data-action="receive"><span class="action-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v17m-7-7 7 7 7-7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="action-label">Recibir</span></button>
+        <button class="action swap" type="button" data-action="swap"><span class="action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3.3 12a8.7 8.7 0 0 1 14.9-6.15L21 8.7M21 3.5v5.2h-5.2M20.7 12a8.7 8.7 0 0 1-14.9 6.15L3 15.3M3 20.5v-5.2h5.2" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="action-label">Intercambiar</span></button>
+        <button class="action" type="button" data-action="buy"><span class="action-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span><span class="action-label">Comprar</span></button>
+      </nav>
+      <div class="section-heading">Tokens <svg viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="token-list" id="token-list"></div>
+      <button class="pill" type="button" data-action="all-tokens">Ver todo <svg viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="section-heading">Perp. <svg viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="perp-scroll">
+        <article class="perp-card"><span class="perp-logo"><img src="wallet-assets/bitcoin.webp" alt="Bitcoin"><span class="perp-badge"><img src="wallet-assets/hype.png" alt="HYPE"></span></span><span class="perp-pair">BTC <span class="lev-tag">40x</span></span><span class="perp-vol">$2.84B Vol</span></article>
+        <article class="perp-card"><span class="perp-logo"><img src="wallet-assets/ethereum.png" alt="Ethereum"><span class="perp-badge"><img src="wallet-assets/hype.png" alt="HYPE"></span></span><span class="perp-pair">ETH <span class="lev-tag">25x</span></span><span class="perp-vol">$1.13B Vol</span></article>
+        <article class="perp-card"><span class="perp-logo hype-logo"><img src="wallet-assets/hype.png" alt="HYPE"><span class="perp-badge"><img src="wallet-assets/hype.png" alt=""></span></span><span class="perp-pair">HYPE <span class="lev-tag">10x</span></span><span class="perp-vol">$508M Vol</span></article>
+        <article class="perp-card"><span class="perp-logo"><img src="wallet-assets/solana.png" alt="Solana"><span class="perp-badge"><img src="wallet-assets/hype.png" alt="HYPE"></span></span><span class="perp-pair">SOL <span class="lev-tag">20x</span></span><span class="perp-vol">$347.18M Vol</span></article>
+      </div>
+      <div class="section-heading">Predicciones <svg viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="pred-scroll">
+        <button class="pred-card" type="button" data-action="prediction"><span class="pred-top"><span class="pred-thumb hormuz"><span class="pred-badge"><svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="3.5" stroke="#fff" stroke-width="1.4"/></svg></span></span><span class="pred-date"><i><svg viewBox="0 0 12 12"><path d="M7 1 2.5 7H6l-1 4L9.5 5H6l1-4Z" fill="#fff"/></svg></i>Oct 31</span></span><span class="pred-title">Strait of Hormuz traffic returns to normal by October 31?</span></button>
+        <button class="pred-card" type="button" data-action="prediction"><span class="pred-top"><span class="pred-thumb flags"><span class="pred-badge"><svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="3.5" stroke="#fff" stroke-width="1.4"/></svg></span></span><span class="pred-date"><i><svg viewBox="0 0 12 12"><path d="M7 1 2.5 7H6l-1 4L9.5 5H6l1-4Z" fill="#fff"/></svg></i>Dec 31</span></span><span class="pred-title">Will the U.S. invade Iran in 2027?</span></button>
+      </div>
+      <div class="ai-bar"><svg viewBox="0 0 24 24" fill="#111217" aria-hidden="true"><path d="M10 3 11.9 8.1 17 10l-5.1 1.9L10 17l-1.9-5.1L3 10l5.1-1.9L10 3Zm8 9 1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1 1-2.5Z"/></svg><span class="ai-title">IA de Trust Wallet</span><button class="ai-ask" type="button" data-action="ai">Pregunta lo que quieras <svg viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+      <nav class="dock" aria-label="Navegación"><div class="dock-pills">
+        <button class="dock-button active" type="button" aria-label="Inicio" data-action="home"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m3.8 10.4 6.8-6a2.1 2.1 0 0 1 2.8 0l6.8 6A2.3 2.3 0 0 1 21 12v7a2 2 0 0 1-2 2h-5v-6h-4v6H5a2 2 0 0 1-2-2v-7a2.3 2.3 0 0 1 .8-1.6Z"/></svg></button>
+        <button class="dock-button" type="button" aria-label="Mercados" data-action="markets"><svg viewBox="0 0 24 24" fill="none"><path d="m4 18 5-6 4 3 7-9M15 6h5v5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="dock-button" type="button" aria-label="Explorar" data-action="explore"><svg viewBox="0 0 24 24" fill="none"><path d="M12 12c-2-2.5-3.5-5-5.5-5a5 5 0 1 0 0 10c2 0 3.5-2.5 5.5-5Zm0 0c2-2.5 3.5-5 5.5-5a5 5 0 1 1 0 10c-2 0-3.5-2.5-5.5-5Z" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        <button class="search-button" type="button" aria-label="Buscar" data-action="search"><svg viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="7.3" stroke="currentColor" stroke-width="2.2"/><path d="m16.2 16.2 5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+      </nav>
+    </section>
+
+    <section class="page wallets-page" id="wallets" aria-label="Billeteras">
+      <header class="wallets-header">
+        <button class="wallets-close" type="button" aria-label="Cerrar billeteras" data-action="home"><svg viewBox="0 0 24 24" fill="none"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+        <h1>Billeteras</h1>
+        <div class="wallets-header-actions">
+          <button class="round-button" type="button" aria-label="Ayuda" data-action="wallet-support"><svg viewBox="0 0 24 24" fill="none"><path d="M4 13v-2a8 8 0 0 1 16 0v2M4 13h3v6H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 1-2Zm16 0h-3v6h2a2 2 0 0 0 2-2v-2a2 2 0 0 0-1-2Z" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="round-button" type="button" aria-label="Configuración" data-action="wallet-settings"><svg viewBox="0 0 24 24" fill="none"><path d="M19.14 12.94c.04-.31.06-.62.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.22l-2.39.96a7.3 7.3 0 0 0-1.63-.94l-.36-2.54a.49.49 0 0 0-.49-.42h-3.84a.49.49 0 0 0-.49.42L9.2 5.32a7.3 7.3 0 0 0-1.63.94l-2.39-.96a.5.5 0 0 0-.61.22L2.65 8.84a.5.5 0 0 0 .12.64l2.03 1.58a6.5 6.5 0 0 0 0 1.88l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .61.22l2.39-.96c.5.39 1.05.71 1.63.94l.36 2.54a.49.49 0 0 0 .49.42h3.84a.49.49 0 0 0 .49-.42l.36-2.54a7.3 7.3 0 0 0 1.63-.94l2.39.96a.5.5 0 0 0 .61-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/></svg></button>
+        </div>
+      </header>
+      <h2 class="wallets-heading">Billeteras para varias monedas</h2>
+      <div class="wallet-list" role="radiogroup" aria-label="Seleccionar billetera">
+        <div class="wallet-row" role="radio" aria-checked="true" tabindex="0" data-wallet="jefazo" data-action="choose-wallet">
+          <span class="wallet-radio" aria-hidden="true"></span><span class="wallet-avatar"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 7.5h13.5A2.5 2.5 0 0 1 21 10v8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18V6a3 3 0 0 1 3-3h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M16 12.5h5v4h-5a2 2 0 0 1 0-4Z" stroke="currentColor" stroke-width="2"/></svg></span><span class="wallet-row-name">Jefazo777</span><button class="wallet-more" type="button" aria-label="Opciones de Jefazo777" data-action="wallet-options"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2.1" fill="currentColor"/><circle cx="12" cy="12" r="2.1" fill="currentColor"/><circle cx="19" cy="12" r="2.1" fill="currentColor"/></svg></button>
+        </div>
+        <div class="wallet-row demo-wallet-row" id="new-demo-wallet" role="radio" aria-checked="false" tabindex="0" data-wallet="new" data-name="Nueva billetera" data-action="choose-wallet" hidden>
+          <span class="wallet-radio" aria-hidden="true"></span><span class="wallet-avatar"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 7.5h13.5A2.5 2.5 0 0 1 21 10v8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 18V6a3 3 0 0 1 3-3h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M16 12.5h5v4h-5a2 2 0 0 1 0-4Z" stroke="currentColor" stroke-width="2"/></svg></span><span class="wallet-row-name">Nueva billetera</span><button class="wallet-more" type="button" aria-label="Opciones de nueva billetera" data-action="wallet-options"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2.1" fill="currentColor"/><circle cx="12" cy="12" r="2.1" fill="currentColor"/><circle cx="19" cy="12" r="2.1" fill="currentColor"/></svg></button>
+        </div>
+      </div>
+      <div class="add-wallet-wrap"><button class="add-wallet-button" type="button" data-action="add-wallet">Añadir billetera</button></div>
+    </section>
+
+    <div class="wallet-sheet-backdrop" id="wallet-sheet-backdrop" hidden>
+      <section class="wallet-sheet" role="dialog" aria-modal="true" aria-labelledby="wallet-sheet-title">
+        <header class="wallet-sheet-header">
+          <h2 id="wallet-sheet-title">Añadir billetera</h2>
+          <button class="wallet-sheet-close" type="button" aria-label="Cerrar" data-action="close-wallet-sheet"><svg viewBox="0 0 24 24" fill="none"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+        </header>
+        <svg class="wallet-sheet-art" viewBox="0 0 190 165" role="img" aria-label="Ilustración decorativa de una billetera y monedas">
+          <ellipse cx="100" cy="147" rx="68" ry="8" fill="#ecebfa"/>
+          <g stroke="#17184a" stroke-width="2.2" stroke-linejoin="round">
+            <path d="m76 47 30 16-16 26-30-16z" fill="#b46cff"/>
+            <ellipse cx="126" cy="37" rx="27" ry="15" transform="rotate(-28 126 37)" fill="#f0bb46"/>
+            <ellipse cx="126" cy="35" rx="24" ry="12" transform="rotate(-28 126 35)" fill="#58c5ff"/>
+            <ellipse cx="104" cy="45" rx="23" ry="19" transform="rotate(-9 104 45)" fill="#4d49ff"/>
+            <path d="m117 91 37-16 24 14-40 25z" fill="#29276d"/>
+            <path d="m118 91 34-15 20 12-37 24z" fill="#4a43da"/>
+            <path d="m37 87 90-12 30 52-94 17z" fill="#24e69a"/>
+            <path d="m39 83 87-11 30 52-91 15z" fill="#55ed9e"/>
+            <path d="m91 91 37-5 13 25-38 7z" fill="#17264f"/>
+            <path d="m101 98 22-3 7 12-22 3z" fill="#36d2cd"/>
+            <circle cx="61" cy="83" r="11" fill="#30d79a"/>
+            <path d="m57 82 8 2m-4-6v9" stroke-width="3" stroke-linecap="round"/>
+            <path d="M90 114v17m-8-8h16" stroke-width="6" stroke-linecap="round"/>
+            <path d="m151 46 8-11 3 13 11 6-13 2-7 10-2-13-10-6z" fill="#7165ff"/>
+            <path d="m68 40 5-8 2 9 8 4-9 2-4 7-2-9-8-4z" fill="#4c43f6"/>
+          </g>
+          <circle cx="54" cy="29" r="3" fill="#05bde9"/><circle cx="151" cy="70" r="3" fill="#26cb91"/>
+        </svg>
+        <div class="wallet-sheet-options">
+          <button class="wallet-option" type="button" data-action="create-wallet">
+            <span class="wallet-option-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span>
+            <span class="wallet-option-copy"><span class="wallet-option-title">Crear nueva billetera</span><span class="wallet-option-subtitle">Nueva frase secreta</span></span>
+          </button>
+          <button class="wallet-option" type="button" data-action="import-wallet">
+            <span class="wallet-option-icon secondary"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 16v4h14v-4" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="wallet-option-copy"><span class="wallet-option-title">Añadir billetera existente</span><span class="wallet-option-subtitle">Restaura la frase secreta, la clave privada o iCloud</span></span>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <section class="recovery-screen" id="recovery-screen" aria-label="Selecciona el método de recuperación" aria-hidden="true">
+      <header class="recovery-header">
+        <button class="recovery-back" type="button" aria-label="Volver" data-action="recovery-back"><svg viewBox="0 0 24 24" fill="none"><path d="m15 18-6-6 6-6M9 12h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <h2>Selecciona el método de recuperación</h2>
+      </header>
+      <div class="recovery-methods">
+        <button class="recovery-method" type="button" data-action="recovery-method"><span class="recovery-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M7 18.5a4.5 4.5 0 0 1-.4-9 5.8 5.8 0 0 1 11.2 1.2 4 4 0 0 1-.3 7.8H7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>iCloud Drive</button>
+        <button class="recovery-method" type="button" data-action="recovery-method" data-method="registration"><span class="recovery-icon"><svg viewBox="0 0 24 24" fill="none"><path d="m4 17.5 1.2-4.2L15.8 2.7a2.1 2.1 0 0 1 3 3L8.2 16.3 4 17.5Zm0 0-.8 3.3 3.3-.8M13.5 5l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Código de registro</button>
+        <button class="recovery-method" type="button" data-action="recovery-method"><span class="recovery-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="15" r="4" stroke="currentColor" stroke-width="1.8"/><path d="m11 12 8-8 2 2-2 2 1.5 1.5L18 12l-2-2-2 2m-6 3h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Clave privada</button>
+        <button class="recovery-more" id="recovery-more" type="button" aria-expanded="false" aria-controls="recovery-extra" data-action="recovery-more">Mostrar más <svg viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="recovery-extra" id="recovery-extra" hidden>
+          <button class="recovery-method" type="button" data-action="recovery-method"><span class="recovery-icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 8h18M7 15h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>Archivo de respaldo</button>
+        </div>
+        <p class="recovery-note">Prototipo visual sin conexión. No uses ni pegues frases secretas o claves privadas.</p>
+      </div>
+    </section>
+
+    <section class="restore-screen" id="restore-screen" aria-label="Restaurar billetera" aria-hidden="true">
+      <header class="restore-header">
+        <button class="restore-back" type="button" aria-label="Volver" data-action="restore-back"><svg viewBox="0 0 24 24" fill="none"><path d="m15 18-6-6 6-6M9 12h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="restore-scan" type="button" aria-label="Escanear" data-action="restore-scan"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3M7 12h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </header>
+      <h1 class="restore-title">Código de registro</h1>
+      <div class="phrase-demo-box">
+        <input id="registration-code" type="text" inputmode="text" autocomplete="off" spellcheck="false" aria-label="Código de registro de demostración" placeholder="Introduce el código de registro">
+        <button class="paste-demo" type="button" data-action="paste-registration-code">Pegar</button>
+        <button class="registration-code-action" type="button" data-action="toggle-registration-code-visibility" aria-pressed="false" hidden>Ocultar</button>
+        <button class="registration-code-action" type="button" data-action="clear-registration-code" hidden>Borrar</button>
+      </div>
+      <p class="restore-hint"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18h6m-5 3h4m-5.8-6.5a7 7 0 1 1 7.6 0c-.9.6-1.3 1.3-1.5 2.5h-4.6c-.2-1.2-.6-1.9-1.5-2.5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Código de prueba local. No es una frase semilla ni restaura fondos reales.</p>
+      <button class="restore-continue" id="registration-continue" type="button" data-action="continue-registration" disabled>Continuar</button>
+    </section>
+
+    <section class="page tokens-page" id="tokens" aria-label="Tokens" aria-hidden="true">
+      <header class="sub-header"><button class="back-button" type="button" aria-label="Volver" data-action="home"><svg viewBox="0 0 24 24" fill="none"><path d="m12 5-7 7 7 7M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h1>Tokens</h1><button class="back-button tokens-filter" type="button" aria-label="Filtrar" data-action="tokens-filter"><svg viewBox="0 0 24 24" fill="none"><path d="M4 8h9m4 0h3M4 16h3m4 0h9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="15" cy="8" r="2" stroke="currentColor" stroke-width="2.2"/><circle cx="9" cy="16" r="2" stroke="currentColor" stroke-width="2.2"/></svg></button></header>
+      <div class="screen-content tokens-content"><label class="picker-search"><svg viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="2"/><path d="m16 16 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input id="tokens-search" type="search" autocomplete="off" placeholder="Buscar" aria-label="Buscar tokens"></label>
+        <div class="token-list" id="all-tokens-list"></div>
+      </div>
+      <nav class="dock" aria-label="Navegación"><div class="dock-pills">
+        <button class="dock-button active" type="button" aria-label="Inicio" data-action="home"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m3.8 10.4 6.8-6a2.1 2.1 0 0 1 2.8 0l6.8 6A2.3 2.3 0 0 1 21 12v7a2 2 0 0 1-2 2h-5v-6h-4v6H5a2 2 0 0 1-2-2v-7a2.3 2.3 0 0 1 .8-1.6Z"/></svg></button>
+        <button class="dock-button" type="button" aria-label="Mercados" data-action="markets"><svg viewBox="0 0 24 24" fill="none"><path d="m4 18 5-6 4 3 7-9M15 6h5v5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="dock-button" type="button" aria-label="Explorar" data-action="explore"><svg viewBox="0 0 24 24" fill="none"><path d="M12 12c-2-2.5-3.5-5-5.5-5a5 5 0 1 0 0 10c2 0 3.5-2.5 5.5-5Zm0 0c2-2.5 3.5-5 5.5-5a5 5 0 1 1 0 10c-2 0-3.5-2.5-5.5-5Z" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        <button class="search-button" type="button" aria-label="Buscar" data-action="search"><svg viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="7.3" stroke="currentColor" stroke-width="2.2"/><path d="m16.2 16.2 5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+      </nav>
+    </section>
+
+    <section class="page" id="send" aria-label="Selecciona un token">
+      <header class="sub-header"><button class="back-button" type="button" aria-label="Volver" data-action="home"><svg viewBox="0 0 24 24" fill="none"><path d="m15 18-6-6 6-6M9 12h11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h1>Selecciona un token</h1></header>
+      <div class="screen-content"><label class="picker-search"><svg viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="2"/><path d="m16 16 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input type="search" placeholder="Buscar tokens" aria-label="Buscar tokens"></label>
+        <button class="picker-row" type="button" data-action="select-usdt"><span class="token-left"><span class="token-logo" style="background:#26a17b"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="22" fill="#26a17b"/><path d="M10 12h24v5H25v3.2c6.2.3 10.8 1.3 10.8 2.6S31.2 25 25 25.3V34h-6v-8.7C12.8 25 8.2 24 8.2 22.8S12.8 20.5 19 20.2V17h-9v-5Z" fill="white"/></svg><span class="network-badge">◆</span></span><span><span class="token-name">USDT</span><span class="token-quantity">Tether USD</span></span></span><span class="token-right"><span class="token-value">$199.79</span><span class="token-quantity">199.98 USDT</span></span></button>
+        <div class="demo-note">Prototipo visual: no se conecta a una wallet y no permite enviar activos.</div><div class="send-demo-title">Enviar</div><div style="color:#85868e;font-size:13px;line-height:1.5">Elige un token para ver esta pantalla de demostración. No introduzcas frases de recuperación ni claves privadas.</div>
+      </div>
+    </section>
+
+    <section class="page" id="receive" aria-label="Recibir">
+      <header class="sub-header"><button class="back-button" type="button" aria-label="Cerrar" data-action="home"><svg viewBox="0 0 24 24" fill="none"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button><h1>Recibir</h1></header>
+      <div class="receive-content"><button class="network-select" type="button" data-action="network"><span class="mini-coin coin-btc"><img src="wallet-assets/bitcoin.webp" alt=""></span> Bitcoin <svg viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="qr-card"><svg class="qr-art" id="demo-qr" viewBox="0 0 200 200" role="img" aria-label="Patrón QR decorativo de demostración, no escaneable"></svg><div class="qr-address">DEMO-ONLY · NO ES UNA DIRECCIÓN REAL</div></div>
+        <div class="warning"><strong>Información de demostración.</strong> Este código no es escaneable y no puede recibir fondos. No envíes activos.</div>
+        <div class="receive-actions"><button class="secondary-button" type="button" data-action="copy"><svg viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="2"/></svg>Copiar</button><button class="secondary-button" type="button" data-action="share"><svg viewBox="0 0 24 24" fill="none"><path d="M12 15V3m0 0L8 7m4-4 4 4M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Compartir</button></div>
+        <div class="receive-footer"><button class="exchange-button" type="button" data-action="deposit"><span class="mini-coin coin-btc"><img src="wallet-assets/bitcoin.webp" alt=""></span><span class="mini-coin coin-usdt">T</span> Depositar desde el exchange</button></div>
+      </div>
+    </section>
+
+    <section class="page" id="swap" aria-label="Intercambiar">
+      <header class="sub-header"><button class="back-button" type="button" aria-label="Volver" data-action="home"><svg viewBox="0 0 24 24" fill="none"><path d="m15 18-6-6 6-6M9 12h11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></header>
+      <div class="swap-content"><div class="swap-toolbar"><button class="market-select" type="button" data-action="market">Market <svg viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><button class="settings-button" type="button" aria-label="Ajustes" data-action="swap-settings"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M7 4v6m-3 7h16m-7-3v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+        <div class="swap-box"><input class="swap-input" id="swap-from" value="0" inputmode="decimal" aria-label="Cantidad a intercambiar"><button class="asset-button" type="button" data-action="asset"><span class="mini-coin coin-usdt">T</span>USDT<svg viewBox="0 0 24 24" fill="none"><path d="m8 10 4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><span class="holding">▣ 199.98</span></div>
+        <span class="swap-arrow"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16m-6-6 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <div class="swap-box"><input class="swap-input" id="swap-to" value="0" inputmode="decimal" aria-label="Cantidad estimada"><button class="asset-button" type="button" data-action="asset"><span class="mini-coin coin-usdt">T</span>USDT<svg viewBox="0 0 24 24" fill="none"><path d="m8 10 4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><span class="holding">▣ 0</span></div>
+        <div class="range-wrap"><input type="range" min="0" max="100" value="0" aria-label="Cantidad del saldo"></div>
+        <div class="keypad" aria-label="Teclado numérico"><button type="button" data-key="1">1</button><button type="button" data-key="2">2</button><button type="button" data-key="3">3</button><button type="button" data-key="4">4</button><button type="button" data-key="5">5</button><button type="button" data-key="6">6</button><button type="button" data-key="7">7</button><button type="button" data-key="8">8</button><button type="button" data-key="9">9</button><button type="button" data-key=".">.</button><button type="button" data-key="0">0</button><button type="button" data-key="delete" aria-label="Borrar"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5H20v14H9l-6-7 6-7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m12 9 5 5m0-5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+        <button class="slide-button" type="button" disabled><span class="slide-arrow"><svg viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Desliza para intercambiar</button>
+      </div>
+    </section>
+
+    <section class="page" id="buy" aria-label="Comprar">
+      <header class="sub-header"><button class="back-button" type="button" aria-label="Volver" data-action="home"><svg viewBox="0 0 24 24" fill="none"><path d="m15 18-6-6 6-6M9 12h11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="buy-tabs"><button class="buy-tab active" type="button">Comprar</button><button class="buy-tab" type="button" data-action="sell">Vender</button></div></header>
+      <div class="buy-content"><div class="buy-amount-area"><input class="buy-amount" id="buy-amount" value="100" inputmode="decimal" aria-label="Importe en dólares"><div class="buy-choices"><button class="choice-button" type="button" data-action="currency"><span>🇺🇸</span> USD <svg viewBox="0 0 24 24" fill="none"><path d="m8 10 4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><button class="choice-button" type="button" data-action="buy-asset"><span class="mini-coin coin-btc"><img src="wallet-assets/bitcoin.webp" alt=""></span> BTC <svg viewBox="0 0 24 24" fill="none"><path d="m8 10 4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div></div>
+        <div class="buy-estimate">0.00122 BTC</div><div class="payment-method"><div class="apple-pay">Pay</div><div class="payment-copy"><span>Pagar con</span><strong>Apple Pay</strong></div><span>›</span></div>
+        <div class="keypad" aria-label="Teclado numérico"><button type="button" data-buy-key="1">1</button><button type="button" data-buy-key="2">2</button><button type="button" data-buy-key="3">3</button><button type="button" data-buy-key="4">4</button><button type="button" data-buy-key="5">5</button><button type="button" data-buy-key="6">6</button><button type="button" data-buy-key="7">7</button><button type="button" data-buy-key="8">8</button><button type="button" data-buy-key="9">9</button><button type="button" data-buy-key=".">.</button><button type="button" data-buy-key="0">0</button><button type="button" data-buy-key="delete" aria-label="Borrar"><svg viewBox="0 0 24 24" fill="none"><path d="M9 5H20v14H9l-6-7 6-7Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m12 9 5 5m0-5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+        <button class="continue-button" type="button" data-action="buy-continue">Continuar</button>
+      </div>
+    </section>
+    <section class="page setup-page" id="setup" aria-label="Configuración inicial" aria-hidden="true">
+      <p class="setup-step" id="setup-step"></p>
+      <h1 class="setup-title" id="setup-title"></h1>
+      <p class="setup-sub">Introduce el saldo en dólares (USD) de cada moneda. La cantidad de cada token se calcula automáticamente. Deja en 0 las monedas que no quieras mostrar.</p>
+      <label class="setup-field"><span>Nombre de la billetera</span><input id="setup-name" type="text" maxlength="24" autocomplete="off"></label>
+      <div id="setup-fields"></div>
+      <div class="setup-total"><span>Saldo total</span><strong id="setup-total">$0.00</strong></div>
+      <div class="setup-actions">
+        <button class="setup-secondary" id="setup-back" type="button" data-action="setup-back">Atrás</button>
+        <button class="setup-primary" id="setup-next" type="button" data-action="setup-next">Siguiente</button>
+      </div>
+    </section>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </main>
+  <script>
+    (() => {
+      const pages = [...document.querySelectorAll(".page")];
+      const toast = document.getElementById("toast");
+      const homePage = document.getElementById("home");
+      const homeHeader = homePage.querySelector(".home-header");
+      const homeBalance = homePage.querySelector(".balance");
+
+      // Al bajar, el chip de la billetera pasa a mostrar el saldo total.
+      function updateHeaderChip() {
+        homeHeader.classList.toggle("scrolled", homeBalance.getBoundingClientRect().bottom < homeHeader.getBoundingClientRect().bottom);
+      }
+      homePage.addEventListener("scroll", updateHeaderChip, { passive: true });
+      const refreshIndicator = document.getElementById("refresh-indicator");
+      const registrationCodeInput = document.getElementById("registration-code");
+      const registrationContinue = document.getElementById("registration-continue");
+      const recoveryScreen = document.getElementById("recovery-screen");
+      const restoreScreen = document.getElementById("restore-screen");
+      const restoreHint = document.querySelector(".restore-hint");
+      let toastTimer;
+      let keypadInput = document.getElementById("swap-from");
+      let pullStart = null;
+      let pullDistance = 0;
+      let refreshing = false;
+
+      homePage.addEventListener("touchstart", (event) => {
+        if (refreshing || homePage.scrollTop > 0 || event.touches.length !== 1 || event.target.closest(".perp-scroll")) return;
+        pullStart = {x: event.touches[0].clientX, y: event.touches[0].clientY};
+        pullDistance = 0;
+        homePage.classList.add("pulling");
+      }, {passive: true});
+
+      homePage.addEventListener("touchmove", (event) => {
+        if (!pullStart || event.touches.length !== 1) return;
+        const touch = event.touches[0];
+        const deltaX = touch.clientX - pullStart.x;
+        const deltaY = touch.clientY - pullStart.y;
+        if (deltaY <= 0 || Math.abs(deltaX) > Math.abs(deltaY)) {
+          if (Math.abs(deltaX) > Math.abs(deltaY)) pullStart = null;
+          return;
+        }
+        if (homePage.scrollTop > 0) {
+          pullStart = null;
+          return;
+        }
+        event.preventDefault();
+        pullDistance = Math.min(deltaY * 0.65, 72);
+        homePage.style.setProperty("--pull-page-distance", `${Math.min(pullDistance * 2.1, 150)}px`);
+        refreshIndicator.style.setProperty("--pull-distance", `${pullDistance}px`);
+        refreshIndicator.classList.toggle("visible", pullDistance > 4);
+        refreshing = pullDistance >= 64;
+        refreshIndicator.classList.toggle("refreshing", refreshing);
+        refreshIndicator.setAttribute("aria-hidden", String(pullDistance <= 4));
+      }, {passive: false});
+
+      homePage.addEventListener("touchend", () => {
+        pullStart = null;
+        const didRefresh = refreshing;
+        refreshing = false;
+        homePage.classList.remove("pulling");
+        pullDistance = 0;
+        homePage.style.removeProperty("--pull-page-distance");
+        refreshIndicator.classList.remove("refreshing", "visible");
+        refreshIndicator.setAttribute("aria-hidden", "true");
+        refreshIndicator.style.removeProperty("--pull-distance");
+        if (didRefresh) {
+          updatePortfolio(isDemoActive(), false);
+          animatePortfolioRefresh();
+        }
+      }, {passive: true});
+
+      homePage.addEventListener("touchcancel", () => {
+        pullStart = null;
+        refreshing = false;
+        pullDistance = 0;
+        homePage.classList.remove("pulling");
+        homePage.style.removeProperty("--pull-page-distance");
+        refreshIndicator.classList.remove("refreshing", "visible");
+        refreshIndicator.setAttribute("aria-hidden", "true");
+        refreshIndicator.style.removeProperty("--pull-distance");
+      }, {passive: true});
+
+      recoveryScreen.addEventListener("animationend", (event) => {
+        if (event.animationName === "recovery-slide-in") recoveryScreen.classList.remove("slide-in");
+      });
+      restoreScreen.addEventListener("animationend", (event) => {
+        if (event.animationName === "recovery-slide-in") restoreScreen.classList.remove("slide-in");
+      });
+
+      function updateRegistrationKeyboardLayout() {
+        const viewport = window.visualViewport;
+        const keyboardInset = viewport
+          ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
+          : 0;
+        const keyboardOpen = document.activeElement === registrationCodeInput && keyboardInset > 120;
+        restoreScreen.classList.toggle("keyboard-open", keyboardOpen);
+        if (keyboardOpen) {
+          registrationContinue.style.setProperty("--keyboard-inset", `${keyboardInset}px`);
+        } else {
+          registrationContinue.style.removeProperty("--keyboard-inset");
+        }
+      }
+
+      function showPage(id) {
+        const leaving = pages.find((page) => page.id === "tokens" && page.classList.contains("active"));
+        const slideOut = leaving && id !== "tokens";
+        const slideIn = id === "tokens" && !leaving;
+        pages.forEach((page) => {
+          const active = page.id === id;
+          page.classList.toggle("active", active);
+          page.setAttribute("aria-hidden", String(!active));
+          if (active) page.scrollTop = 0;
+        });
+        if (slideIn) leaving?.classList.remove("slide-out");
+        const tokensPage = document.getElementById("tokens");
+        tokensPage.classList.remove("slide-in", "slide-out");
+        if (slideIn) tokensPage.classList.add("slide-in");
+        if (slideOut) tokensPage.classList.add("active", "slide-out");
+        updateHeaderChip();
+        window.scrollTo(0, 0);
+      }
+
+      function showWallets() {
+        pages.forEach((page) => {
+          const keepVisible = page.id === "home" || page.id === "wallets";
+          page.classList.toggle("active", keepVisible);
+          page.setAttribute("aria-hidden", String(page.id !== "wallets"));
+          if (page.id === "wallets") page.scrollTop = 0;
+        });
+        window.scrollTo(0, 0);
+      }
+
+      const STORAGE_KEY = "wallet-proto-config-v1";
+      // Precios de referencia (USD) para calcular la cantidad de cada token a partir del saldo.
+      const COINS = [
+        { id: "btc", name: "Bitcoin", symbol: "BTC", price: 86850, decimals: 6, logo: "wallet-assets/bitcoin.webp", main: true },
+        { id: "eth", name: "Ethereum", symbol: "ETH", price: 3285, decimals: 5, logo: "wallet-assets/ethereum.png", main: true },
+        { id: "usdt", name: "Tether", symbol: "USDT", price: 1, decimals: 2, logo: "wallet-assets/usdt.png", main: true },
+        { id: "sol", name: "Solana", symbol: "SOL", price: 140, decimals: 4, logo: "wallet-assets/solana.png" },
+        { id: "bnb", name: "BNB", symbol: "BNB", price: 600, decimals: 4, logo: "wallet-assets/bnb.png" },
+        { id: "xrp", name: "XRP", symbol: "XRP", price: 2.2, decimals: 2, logo: "wallet-assets/xrp.png" },
+        { id: "ltc", name: "Litecoin", symbol: "LTC", price: 85, decimals: 4, logo: "wallet-assets/litecoin.png" },
+        { id: "trx", name: "TRON", symbol: "TRX", price: 0.25, decimals: 2, logo: "wallet-assets/tron.webp" }
+      ];
+      const DEFAULT_CONFIG = [
+        { name: "Jefazo777", amounts: { btc: 199.76, eth: 164.23 } },
+        { name: "Nueva billetera", amounts: { btc: 742 } }
+      ];
+      let config = structuredClone(DEFAULT_CONFIG);
+      let setupDraft = null;
+      let setupStep = 0;
+      let hasSavedConfig = false;
+
+      function loadConfig() {
+        try {
+          const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (Array.isArray(stored) && stored.length === 2 && stored.every((w) => w && typeof w.name === "string" && w.amounts)) {
+            config = stored.map((w, index) => ({
+              name: w.name.trim().slice(0, 24) || DEFAULT_CONFIG[index].name,
+              amounts: Object.fromEntries(COINS.map((c) => [c.id, Math.max(0, Number(w.amounts[c.id]) || 0)]))
+            }));
+            return true;
+          }
+        } catch (error) {
+          console.error("No se pudo leer la configuración guardada:", error);
+        }
+        return false;
+      }
+
+      function saveConfig() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+        } catch (error) {
+          console.error("No se pudo guardar la configuración:", error);
+          notify("No se pudo guardar en este navegador; los datos durarán solo esta sesión.");
+        }
+      }
+
+      function formatNumber(value, decimals) {
+        return value.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+      }
+
+      function formatUsd(value) {
+        return "$" + formatNumber(value, 2);
+      }
+
+      function parseAmount(text) {
+        const normalized = String(text).trim().replace(/[\s,]/g, "");
+        const value = Number(normalized);
+        return Number.isFinite(value) && value > 0 ? value : 0;
+      }
+
+      // En el asistente se escribe con punto para miles y coma para centavos.
+      function parseSetupAmount(text) {
+        const normalized = String(text).trim().replace(/[\s.]/g, "").replace(",", ".");
+        const value = Number(normalized);
+        return Number.isFinite(value) && value > 0 ? value : 0;
+      }
+
+      function formatSetupUsd(value) {
+        return "$" + value.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: "always" });
+      }
+
+      function isDemoActive() {
+        return document.getElementById("new-demo-wallet").getAttribute("aria-checked") === "true";
+      }
+
+      function applyWalletNames() {
+        const rows = document.querySelectorAll(".wallet-row");
+        rows[0].dataset.name = config[0].name;
+        rows[1].dataset.name = config[1].name;
+        rows[0].querySelector(".wallet-row-name").textContent = config[0].name;
+        rows[1].querySelector(".wallet-row-name").textContent = config[1].name;
+        rows[0].querySelector(".wallet-more").setAttribute("aria-label", `Opciones de ${config[0].name}`);
+        rows[1].querySelector(".wallet-more").setAttribute("aria-label", `Opciones de ${config[1].name}`);
+        document.getElementById("active-wallet-name").textContent = config[isDemoActive() ? 1 : 0].name;
+      }
+
+      // Variación simulada de 24 h: entre -2% y +3% del valor de cada token, distinta en cada actualización.
+      function randomChange(usd) {
+        const percent = Math.random() * 5 - 2;
+        return Math.round(usd * percent) / 100;
+      }
+
+      function formatChange(delta) {
+        return `${delta < 0 ? "-" : "+"}$${formatNumber(Math.abs(delta), 2)}`;
+      }
+
+      let tokenChanges = {};
+
+      function buildTokenRow(coin, usd, change) {
+        const row = document.createElement("button");
+        row.className = "token-row";
+        row.type = "button";
+        row.dataset.action = coin.id === "usdt" ? "select-usdt" : "send";
+        row.innerHTML = `<span class="token-left"><span class="token-logo"><img class="crypto-logo" src="${coin.logo}" alt="${coin.name}"></span><span><span class="token-name">${coin.name}</span><span class="token-quantity"></span></span></span><span class="token-right"><span class="token-value"></span><span class="token-gain"></span></span>`;
+        row.querySelector(".token-quantity").textContent = `${(usd / coin.price).toLocaleString("en-US", { maximumFractionDigits: coin.decimals })} ${coin.symbol}`;
+        row.querySelector(".token-value").textContent = formatUsd(usd);
+        const gain = row.querySelector(".token-gain");
+        gain.textContent = formatChange(change);
+        gain.classList.toggle("down", change < 0);
+        return row;
+      }
+
+      function renderTokens(wallet) {
+        const list = document.getElementById("token-list");
+        list.replaceChildren();
+        const owned = COINS.filter((coin) => wallet.amounts[coin.id] > 0);
+        let totalChange = 0;
+        tokenChanges = {};
+        if (!owned.length) {
+          const empty = document.createElement("p");
+          empty.className = "token-quantity";
+          empty.style.padding = "0 17px";
+          empty.textContent = "Esta billetera no tiene tokens.";
+          list.append(empty);
+          return totalChange;
+        }
+        owned.forEach((coin) => {
+          const usd = wallet.amounts[coin.id];
+          const change = randomChange(usd);
+          tokenChanges[coin.id] = change;
+          totalChange += change;
+          list.append(buildTokenRow(coin, usd, change));
+        });
+        return totalChange;
+      }
+
+      function renderAllTokens() {
+        const wallet = config[isDemoActive() ? 1 : 0];
+        const query = document.getElementById("tokens-search").value.trim().toLowerCase();
+        const list = document.getElementById("all-tokens-list");
+        list.replaceChildren();
+        const owned = COINS.filter((coin) => wallet.amounts[coin.id] > 0);
+        const matches = owned.filter((coin) => !query || coin.name.toLowerCase().includes(query) || coin.symbol.toLowerCase().includes(query));
+        if (!matches.length) {
+          const empty = document.createElement("p");
+          empty.className = "token-quantity";
+          empty.style.padding = "8px 1px";
+          empty.textContent = owned.length ? "No se encontraron tokens." : "Esta billetera no tiene tokens.";
+          list.append(empty);
+          return;
+        }
+        matches.forEach((coin) => list.append(buildTokenRow(coin, wallet.amounts[coin.id], tokenChanges[coin.id] ?? 0)));
+      }
+
+      function openAllTokens() {
+        document.getElementById("tokens-search").value = "";
+        renderAllTokens();
+        showPage("tokens");
+      }
+
+      function updatePortfolio(isDemo, animate = true) {
+        const wallet = config[isDemo ? 1 : 0];
+        const total = COINS.reduce((sum, coin) => sum + wallet.amounts[coin.id], 0);
+        document.querySelector(".wallet-mark").classList.toggle("blue", isDemo);
+        setBalance(formatUsd(total), animate);
+        const totalChange = renderTokens(wallet);
+        const percent = total > 0 ? Math.abs(totalChange) / total * 100 : 0;
+        const change = document.querySelector(".balance-change");
+        change.classList.toggle("down", totalChange < 0);
+        document.getElementById("wallet-change").textContent = `${formatChange(totalChange)} (${formatNumber(percent, 2)}%)`;
+      }
+
+      function renderSetupStep() {
+        const wallet = setupDraft[setupStep];
+        const last = setupStep === setupDraft.length - 1;
+        document.getElementById("setup-step").textContent = `Paso ${setupStep + 1} de ${setupDraft.length}`;
+        document.getElementById("setup-title").textContent = setupStep === 0 ? "Saldo de tu billetera principal" : "Saldo de la nueva billetera";
+        const nameInput = document.getElementById("setup-name");
+        nameInput.value = wallet.name;
+        const fields = document.getElementById("setup-fields");
+        fields.replaceChildren();
+        const extra = document.createElement("div");
+        extra.hidden = !COINS.some((coin) => !coin.main && wallet.amounts[coin.id] > 0);
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "setup-more";
+        toggle.setAttribute("aria-expanded", String(!extra.hidden));
+        toggle.textContent = extra.hidden ? "Añadir otras monedas" : "Ocultar otras monedas";
+        toggle.addEventListener("click", () => {
+          extra.hidden = !extra.hidden;
+          toggle.setAttribute("aria-expanded", String(!extra.hidden));
+          toggle.textContent = extra.hidden ? "Añadir otras monedas" : "Ocultar otras monedas";
+        });
+        COINS.forEach((coin) => {
+          const label = document.createElement("label");
+          label.className = "setup-field";
+          const title = document.createElement("span");
+          const dot = document.createElement("img");
+          dot.className = "coin-dot";
+          dot.src = coin.logo;
+          dot.alt = "";
+          title.append(dot, `${coin.name} (${coin.symbol}) - USD`);
+          const input = document.createElement("input");
+          input.type = "text";
+          input.inputMode = "decimal";
+          input.autocomplete = "off";
+          input.dataset.coin = coin.id;
+          input.value = wallet.amounts[coin.id] ? String(wallet.amounts[coin.id]).replace(".", ",") : "0";
+          input.addEventListener("focus", () => { if (input.value === "0") input.select(); });
+          label.append(title, input);
+          (coin.main ? fields : extra).append(label);
+          if (coin.id === "usdt") fields.append(toggle, extra);
+        });
+        document.getElementById("setup-back").hidden = setupStep === 0 && !hasSavedConfig;
+        document.getElementById("setup-back").textContent = setupStep === 0 ? "Cancelar" : "Atrás";
+        document.getElementById("setup-next").textContent = last ? "Guardar y empezar" : "Siguiente";
+        updateSetupTotal();
+      }
+
+      function readSetupStep() {
+        const wallet = setupDraft[setupStep];
+        wallet.name = document.getElementById("setup-name").value.trim().slice(0, 24) || DEFAULT_CONFIG[setupStep].name;
+        document.querySelectorAll("#setup-fields input").forEach((input) => {
+          wallet.amounts[input.dataset.coin] = parseSetupAmount(input.value);
+        });
+      }
+
+      function updateSetupTotal() {
+        let total = 0;
+        document.querySelectorAll("#setup-fields input").forEach((input) => { total += parseSetupAmount(input.value); });
+        document.getElementById("setup-total").textContent = formatSetupUsd(total);
+      }
+
+      function openSetup() {
+        setupDraft = structuredClone(config);
+        setupStep = 0;
+        renderSetupStep();
+        showPage("setup");
+      }
+
+      function setBalance(value, animate = true) {
+        const balance = document.getElementById("wallet-balance");
+        const visual = balance.querySelector(".balance-visual");
+        const accessibleValue = balance.querySelector(".sr-only");
+        const previousValue = balance.dataset.value || accessibleValue.textContent;
+        balance.dataset.value = value;
+        document.getElementById("chip-balance").textContent = value;
+        accessibleValue.textContent = value;
+        if (!animate) {
+          visual.textContent = value;
+          return;
+        }
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || typeof visual.animate !== "function") {
+          visual.textContent = value;
+          return;
+        }
+
+        const pattern = /^([^0-9]*)([0-9,]+)(\.?)([0-9]*)$/;
+        const previous = previousValue.match(pattern);
+        const next = value.match(pattern);
+        if (!previous || !next || previous[3] !== next[3]) {
+          visual.textContent = value;
+          return;
+        }
+        previous[2] = previous[2].replace(/,/g, "");
+        next[2] = next[2].replace(/,/g, "");
+
+        const animationId = (Number(balance.dataset.animationId) || 0) + 1;
+        balance.dataset.animationId = String(animationId);
+        const integerWidth = Math.max(previous[2].length, next[2].length);
+        const oldInteger = previous[2].padStart(integerWidth, " ");
+        const newInteger = next[2].padStart(integerWidth, " ");
+        const fractionWidth = Math.max(previous[4].length, next[4].length);
+        const oldFraction = previous[4].padEnd(fractionWidth, " ");
+        const newFraction = next[4].padEnd(fractionWidth, " ");
+        const lineHeight = parseFloat(getComputedStyle(balance).lineHeight);
+        const animations = [];
+        visual.replaceChildren();
+        visual.append(document.createTextNode(next[1]));
+
+        function appendDigit(start, end, order) {
+          if (start === " " && end === " ") {
+            visual.append(document.createTextNode(" "));
+            return;
+          }
+
+          const sequence = [start];
+          if (start === " ") {
+            for (let digit = 0; digit <= Number(end); digit += 1) sequence.push(String(digit));
+          } else if (end === " ") {
+            sequence.push(" ");
+          } else {
+            const from = Number(start);
+            const to = Number(end);
+            const steps = (to - from + 10) % 10 || 10;
+            for (let step = 1; step <= steps; step += 1) sequence.push(String((from + step) % 10));
+          }
+
+          const slot = document.createElement("span");
+          slot.className = "balance-digit";
+          const track = document.createElement("span");
+          track.className = "balance-digit-track";
+          sequence.forEach((digit) => {
+            const item = document.createElement("span");
+            item.textContent = digit;
+            track.append(item);
+          });
+          slot.append(track);
+          visual.append(slot);
+          animations.push(track.animate(
+            [{ transform: "translateY(0)" }, { transform: `translateY(${-lineHeight * (sequence.length - 1)}px)` }],
+            { duration: 360, delay: order * 14, easing: "cubic-bezier(.16,.72,.2,1)", fill: "forwards" }
+          ));
+        }
+
+        let order = 0;
+        for (let index = 0; index < integerWidth; index += 1) {
+          // La coma de miles solo se muestra si hay un dígito a su izquierda, antes o después del cambio.
+          const fromRight = integerWidth - 1 - index;
+          if (index > 0 && fromRight % 3 === 2 && (oldInteger[index - 1] !== " " || newInteger[index - 1] !== " ")) {
+            visual.append(document.createTextNode(","));
+          }
+          appendDigit(oldInteger[index], newInteger[index], order);
+          order += 1;
+        }
+        visual.append(document.createTextNode(next[3]));
+        for (let index = 0; index < fractionWidth; index += 1) {
+          appendDigit(oldFraction[index], newFraction[index], order);
+          order += 1;
+        }
+
+        Promise.all(animations.map((animation) => animation.finished.catch(() => undefined))).then(() => {
+          if (balance.dataset.animationId === String(animationId)) visual.textContent = value;
+        });
+      }
+
+      function animatePortfolioRefresh() {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        document.querySelectorAll(".token-row").forEach((row, index) => {
+          if (typeof row.animate !== "function") return;
+          row.animate(
+            [{ opacity: 0.2 }, { opacity: 1 }],
+            { duration: 150, delay: index * 20, easing: "ease-out" }
+          );
+        });
+      }
+
+      function notify(message) {
+        toast.textContent = message;
+        toast.classList.add("visible");
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(() => toast.classList.remove("visible"), 2400);
+      }
+
+      function updateRegistrationButton() {
+        const hasCode = registrationCodeInput.value.length > 0;
+        registrationContinue.disabled = registrationCodeInput.value.trim().length === 0;
+        document.querySelector(".paste-demo").hidden = hasCode;
+        document.querySelectorAll(".registration-code-action").forEach((button) => {
+          button.hidden = !hasCode;
+        });
+        if (!hasCode) {
+          registrationCodeInput.closest(".phrase-demo-box").classList.remove("is-obscured");
+          document.querySelector('[data-action="toggle-registration-code-visibility"]').textContent = "Ocultar";
+          document.querySelector('[data-action="toggle-registration-code-visibility"]').setAttribute("aria-pressed", "false");
+        }
+      }
+
+      function activateDemoWallet() {
+        const newWallet = document.getElementById("new-demo-wallet");
+        if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+        newWallet.hidden = false;
+        document.querySelectorAll(".wallet-row").forEach((wallet) => {
+          wallet.setAttribute("aria-checked", String(wallet === newWallet));
+        });
+        document.getElementById("active-wallet-name").textContent = config[1].name;
+        registrationCodeInput.value = "";
+        updateRegistrationButton();
+        document.getElementById("restore-screen").classList.remove("active");
+        document.getElementById("restore-screen").setAttribute("aria-hidden", "true");
+        document.getElementById("recovery-screen").classList.remove("active");
+        document.getElementById("recovery-screen").setAttribute("aria-hidden", "true");
+        showPage("home");
+        updatePortfolio(true);
+        window.scrollTo(0, 0);
+        animatePortfolioRefresh();
+      }
+
+      function renderDemoQr() {
+        const svg = document.getElementById("demo-qr");
+        const size = 25;
+        const cell = 8;
+        const origins = [[0, 0], [size - 7, 0], [0, size - 7]];
+        const inFinder = (x, y) => origins.some(([ox, oy]) => x >= ox && x < ox + 7 && y >= oy && y < oy + 7);
+        let cells = "";
+        for (let y = 0; y < size; y += 1) {
+          for (let x = 0; x < size; x += 1) {
+            let finder = false;
+            for (const [ox, oy] of origins) {
+              const dx = x - ox;
+              const dy = y - oy;
+              if (dx >= 0 && dx < 7 && dy >= 0 && dy < 7) {
+                finder = dx === 0 || dy === 0 || dx === 6 || dy === 6 || (dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4);
+                break;
+              }
+            }
+            const pattern = ((x * 17 + y * 31 + x * y * 7 + (x ^ y) * 13) % 11) < 5;
+            if (finder || (!inFinder(x, y) && pattern)) cells += `<rect x="${x * cell}" y="${y * cell}" width="${cell - 1}" height="${cell - 1}" rx="1.5"/>`;
+          }
+        }
+        svg.setAttribute("viewBox", `0 0 ${size * cell} ${size * cell}`);
+        svg.innerHTML = `<rect width="100%" height="100%" rx="10" fill="#fff"/><g fill="#111217">${cells}</g><rect x="87" y="87" width="26" height="26" rx="7" fill="#fff"/><image href="wallet-assets/bitcoin.webp" x="88" y="88" width="24" height="24"/>`;
+      }
+
+      document.addEventListener("focusin", (event) => {
+        if (event.target.id === "swap-from" || event.target.id === "swap-to") keypadInput = event.target;
+      });
+      registrationCodeInput.addEventListener("focus", () => {
+        restoreHint.style.top = `${restoreHint.offsetTop}px`;
+        updateRegistrationKeyboardLayout();
+      });
+      registrationCodeInput.addEventListener("blur", () => {
+        updateRegistrationKeyboardLayout();
+        window.requestAnimationFrame(() => {
+          if (document.activeElement !== registrationCodeInput) {
+            restoreHint.style.removeProperty("top");
+            updateRegistrationKeyboardLayout();
+          }
+        });
+      });
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", updateRegistrationKeyboardLayout);
+        window.visualViewport.addEventListener("scroll", updateRegistrationKeyboardLayout);
+      }
+      registrationCodeInput.addEventListener("input", updateRegistrationButton);
+
+      document.addEventListener("click", (event) => {
+        const key = event.target.closest("[data-key], [data-buy-key]");
+        if (key) {
+          const buy = key.hasAttribute("data-buy-key");
+          const input = buy ? document.getElementById("buy-amount") : keypadInput;
+          const value = key.dataset.key ?? key.dataset.buyKey;
+          if (value === "delete") input.value = input.value.slice(0, -1) || "0";
+          else if (value !== "." || !input.value.includes(".")) input.value = input.value === "0" && value !== "." ? value : input.value + value;
+          return;
+        }
+
+        const button = event.target.closest("[data-action]");
+        if (!button) return;
+        switch (button.dataset.action) {
+          case "home": showPage("home"); break;
+          case "send": showPage("send"); break;
+          case "select-usdt": notify("Vista de envío de demostración: no se realizan transacciones."); break;
+          case "receive": showPage("receive"); break;
+          case "swap": showPage("swap"); break;
+          case "buy": showPage("buy"); break;
+          case "dismiss": document.getElementById("backup-banner").remove(); break;
+          case "activity": notify("No hay actividad en este prototipo."); break;
+          case "scan": notify("El escáner de cámara no está disponible en este prototipo."); break;
+          case "wallet": showWallets(); break;
+          case "choose-wallet": {
+            const row = button.closest(".wallet-row");
+            document.querySelectorAll(".wallet-row").forEach((wallet) => wallet.setAttribute("aria-checked", String(wallet === row)));
+            document.getElementById("active-wallet-name").textContent = row.dataset.name;
+            const isDemo = row.dataset.wallet === "new";
+            showPage("home");
+            updatePortfolio(isDemo);
+            animatePortfolioRefresh();
+            break;
+          }
+          case "wallet-options": event.stopPropagation(); notify("Opciones de billetera de demostración."); break;
+          case "wallet-support": notify("Ayuda de billeteras de demostración."); break;
+          case "wallet-settings": openSetup(); break;
+          case "setup-back":
+            if (setupStep === 0) { showWallets(); break; }
+            readSetupStep();
+            setupStep -= 1;
+            renderSetupStep();
+            break;
+          case "setup-next":
+            readSetupStep();
+            if (setupStep < setupDraft.length - 1) {
+              setupStep += 1;
+              renderSetupStep();
+              break;
+            }
+            config = setupDraft;
+            hasSavedConfig = true;
+            saveConfig();
+            applyWalletNames();
+            showPage("home");
+            updatePortfolio(isDemoActive());
+            animatePortfolioRefresh();
+            notify("Configuración guardada.");
+            break;
+          case "add-wallet": document.getElementById("wallet-sheet-backdrop").hidden = false; break;
+          case "close-wallet-sheet": document.getElementById("wallet-sheet-backdrop").hidden = true; break;
+          case "create-wallet": notify("La creación de billeteras no está habilitada en este prototipo."); break;
+          case "import-wallet":
+            document.getElementById("wallet-sheet-backdrop").hidden = true;
+            recoveryScreen.classList.add("active", "slide-in");
+            recoveryScreen.setAttribute("aria-hidden", "false");
+            break;
+          case "recovery-back":
+            document.getElementById("recovery-screen").classList.remove("active");
+            document.getElementById("recovery-screen").setAttribute("aria-hidden", "true");
+            document.getElementById("wallet-sheet-backdrop").hidden = false;
+            break;
+          case "recovery-method":
+            if (button.dataset.method === "registration") {
+              restoreScreen.classList.add("active", "slide-in");
+              document.getElementById("restore-screen").setAttribute("aria-hidden", "false");
+            } else {
+              notify("La recuperación no está habilitada. No introduzcas frases secretas ni claves privadas.");
+            }
+            break;
+          case "restore-back":
+            document.getElementById("restore-screen").classList.remove("active");
+            document.getElementById("restore-screen").setAttribute("aria-hidden", "true");
+            document.getElementById("recovery-screen").classList.add("active");
+            document.getElementById("recovery-screen").setAttribute("aria-hidden", "false");
+            break;
+          case "restore-scan": notify("El escáner está desactivado en este prototipo."); break;
+          case "paste-registration-code":
+            if (!navigator.clipboard || typeof navigator.clipboard.readText !== "function") {
+              notify("El navegador no permite leer el portapapeles aquí. Pega el código en el campo manualmente.");
+              break;
+            }
+            navigator.clipboard.readText().then((value) => {
+              registrationCodeInput.value = value;
+              updateRegistrationButton();
+              registrationCodeInput.focus();
+            }).catch((error) => {
+              console.error("No se pudo leer el portapapeles:", error);
+              notify("No se pudo leer el portapapeles. Pega el código en el campo manualmente.");
+            });
+            break;
+          case "toggle-registration-code-visibility": {
+            const obscured = registrationCodeInput.closest(".phrase-demo-box").classList.toggle("is-obscured");
+            button.textContent = obscured ? "Mostrar" : "Ocultar";
+            button.setAttribute("aria-pressed", String(obscured));
+            break;
+          }
+          case "clear-registration-code":
+            registrationCodeInput.value = "";
+            updateRegistrationButton();
+            registrationCodeInput.focus();
+            break;
+          case "continue-registration": activateDemoWallet(); break;
+          case "recovery-more": {
+            const more = document.getElementById("recovery-more");
+            const expanded = more.getAttribute("aria-expanded") === "true";
+            more.setAttribute("aria-expanded", String(!expanded));
+            document.getElementById("recovery-extra").hidden = expanded;
+            break;
+          }
+          case "copy": notify("No hay una dirección real para copiar."); break;
+          case "share": notify("No se comparte ninguna dirección real."); break;
+          case "network": notify("Red de demostración: Bitcoin."); break;
+          case "deposit": notify("Los depósitos están desactivados en este prototipo."); break;
+          case "asset": notify("Selección de activos solo visual."); break;
+          case "market": case "swap-settings": notify("Ajustes de demostración."); break;
+          case "buy-continue": notify("Las compras y los pagos están desactivados en este prototipo."); break;
+          case "currency": case "buy-asset": case "sell": notify("Selección solo visual; no hay proveedores de pago conectados."); break;
+          case "all-tokens": openAllTokens(); break;
+          case "tokens-filter": notify("Los filtros no están disponibles en este prototipo."); break;
+          case "prediction": notify("Los mercados de predicción no están disponibles en este prototipo."); break;
+          case "ai": notify("El asistente de IA no está disponible en este prototipo."); break;
+          case "markets": notify("Vista de mercados de demostración."); break;
+          case "explore": notify("Explorar no está disponible en este prototipo."); break;
+          case "search": notify("La búsqueda está desactivada en este prototipo."); break;
+          default: break;
+        }
+      });
+      document.getElementById("wallet-sheet-backdrop").addEventListener("click", (event) => {
+        if (event.target.id === "wallet-sheet-backdrop") event.currentTarget.hidden = true;
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") document.getElementById("wallet-sheet-backdrop").hidden = true;
+        if (event.key === "Escape") {
+          document.getElementById("recovery-screen").classList.remove("active");
+          document.getElementById("recovery-screen").setAttribute("aria-hidden", "true");
+          document.getElementById("restore-screen").classList.remove("active");
+          document.getElementById("restore-screen").setAttribute("aria-hidden", "true");
+        }
+      });
+      document.getElementById("setup-fields").addEventListener("input", updateSetupTotal);
+      document.getElementById("tokens").addEventListener("animationend", (event) => {
+        const page = event.currentTarget;
+        if (event.animationName === "tokens-slide-out") page.classList.remove("active", "slide-out");
+        if (event.animationName === "recovery-slide-in") page.classList.remove("slide-in");
+      });
+      document.getElementById("tokens-search").addEventListener("input", renderAllTokens);
+      renderDemoQr();
+      hasSavedConfig = loadConfig();
+      applyWalletNames();
+      updatePortfolio(false, false);
+      if (!hasSavedConfig) openSetup();
+    })();
+  </script>
+</body>
+</html>
